@@ -2,8 +2,8 @@ from __future__ import division
 import pygamma as pg
 import numpy as np
 import matplotlib.pyplot as plt
-import pdb
 import pulse_sequences
+import time
 
 def hz_to_tesla(hz):
     # for 1H neuclei
@@ -35,7 +35,7 @@ def binning(mx, b0=123.23, high_ppm=-3.5, low_ppm=-1.5, dt=5e-4, npts=4096, line
     return ADC, FFT, nu
 
 
-def plot_fft(sys, ADC, FFT, nu):
+def plot(sys, ADC, FFT, nu):
     fig, axes = plt.subplots(2, 2, sharex='col', sharey=True,  figsize=(19.2, 10.8), dpi=85)
     # pulse sequence name, system name and magnetic field strength
     plt.suptitle('FID: %s B0: %.2fT' %(sys.name(), hz_to_tesla(sys.Omega())))
@@ -68,7 +68,10 @@ def normalise_complex_signal(signal):
 
 
 if __name__ == '__main__':
-    sys =load_sys()
+    start = time.time()
+    sys = load_sys()
     mx = pulse_sequences.fid(sys)
     ADC, FFT, nu = binning(mx)
-    plot_fft(sys, ADC, FFT, nu)
+    end = time.time()
+    print('Simulation took %.2f seconds' %(end-start))
+    plot(sys, ADC, FFT, nu)
