@@ -3,31 +3,20 @@ import pygamma as pg
 import numpy as np
 import matplotlib.pyplot as plt
 import pdb
+import pulse_sequences
 
 def hz_to_tesla(hz):
     # for 1H neuclei
-    return hz / 42.58
+    return hz / 42.57747892
 
 def load_sys(infile='./sys/gaba.sys'):
     sys = pg.spin_system()
     sys.read(infile)
     return sys
 
-def fid(sys, b0=123.23):
-    sys.OmegaAdjust(b0)
-    H = pg.Hcs(sys) + pg.HJ(sys)
-    D = pg.Fm(sys)
-    ACQ = pg.acquire1D(pg.gen_op(D), H, 0.1)
-    sigma = pg.sigma_eq(sys)
-    sigma0 = pg.Ixpuls(sys, sigma, 90.0)
-    mx = pg.TTable1D(ACQ.table(sigma0))
-    return mx
-
-
 def binning(mx, b0=123.23, high_ppm=-3.5, low_ppm=-1.5, dt=5e-4, npts=4096, linewidth=1):
-    # add some broadening and decay to the model
-    mx.broaden(linewidth)
-    mx.Iscale(0.1, 0)
+    mx.broaden(linewidth)       # add some broadening
+    mx.resolution(0.5)          # Combine transitions within 0.5 rad/sec
 
     ADC = []
     acq = mx.T(npts, dt)
@@ -79,7 +68,7 @@ def normalise_complex_signal(signal):
 
 
 if __name__ == '__main__':
-    sys = sys=load_sys()
-    mx = fid(sys)
+    sys =load_sys()
+    mx = pulse_sequences.fid(sys)
     ADC, FFT, nu = binning(mx)
     plot_fft(sys, ADC, FFT, nu)
