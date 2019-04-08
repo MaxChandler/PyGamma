@@ -9,7 +9,7 @@ def hz_to_tesla(hz):
     # for 1H neuclei
     return hz / 42.57747892
 
-def load_sys(infile='./sys/gaba.sys'):
+def load_sys(infile):
     sys = pg.spin_system()
     sys.read(infile)
     return sys
@@ -69,7 +69,7 @@ def normalise_complex_signal(signal):
 
 if __name__ == '__main__':
     start = time.time()
-    sys = load_sys()
+    sys = load_sys('./sys/gaba.sys')
     mx = pulse_sequences.fid(sys)
     ADC, FFT, nu = binning(mx)
     end = time.time()
